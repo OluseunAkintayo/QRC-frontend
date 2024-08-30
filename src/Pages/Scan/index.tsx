@@ -20,8 +20,11 @@ const Scan = () => {
     try {
       const res = await axios.request(options);
       const data: IScanResult = res.data;
-      if(data.success) window.location.replace(data.url);
-      return;
+      if(data.success) {
+        window.location.href = data.url;
+        window.location.replace(data.url);
+      }
+      // return;
     } catch (error) {
       console.log(error);
     }
@@ -35,12 +38,15 @@ const Scan = () => {
     <section className='h-screen grid place-items-center'>
       <div className='p-4'>
         {
-          (location.trim() === '' || id?.trim() === '') ?
-          <h3 className='text-2xl'>URL ID cannot be empty</h3> :
-          <>
+          (location.trim() === '' || id?.trim() === '') &&
+          <h3 className='text-2xl'>URL ID cannot be empty</h3>
+        }
+        {
+          (location.trim().length > 1 && (id && id?.trim().length > 1))  &&
+          <div>
             <h3><span className='text-2xl animate-pulse'>Scanning QR Code</span></h3>
             <p className='text-center animate-pulse'>Please wait...</p>
-          </>
+          </div>
         }
       </div>
     </section>
