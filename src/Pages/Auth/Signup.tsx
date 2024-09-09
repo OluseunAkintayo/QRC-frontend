@@ -8,6 +8,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { Loader } from 'lucide-react';
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom';
+import google from '@/assets/google.svg';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -97,7 +98,7 @@ const Signup = () => {
               className="w-full"
               onClick={showMessage}
             >
-              <img src="/public/google.svg" className='w-5 mr-1' />
+              <img src={google} className='w-5 mr-1' />
               Sign up with Google
             </Button>
           </div>
