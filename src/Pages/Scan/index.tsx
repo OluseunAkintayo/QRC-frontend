@@ -10,12 +10,12 @@ interface IScanResult {
 const Scan = () => {
   const location = useLocation().search;
   const [params,] = useSearchParams();
-  const id = params.get("url-id");
+  const id = params.get("id");
 
   const scan = async (urlId: string) => {
     const options: AxiosRequestConfig = {
       method: "GET",
-      url: `${import.meta.env.VITE_BACKEND_URL}/qrcode/scan?Id=${urlId}`,
+      url: `qrcode/scan?Id=${urlId}`,
     }
     try {
       const res = await axios.request(options);
@@ -24,7 +24,7 @@ const Scan = () => {
         window.location.href = data.url;
         window.location.replace(data.url);
       }
-      // return;
+      return;
     } catch (error) {
       console.log(error);
     }
