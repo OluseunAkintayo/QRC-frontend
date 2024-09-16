@@ -42,7 +42,7 @@ const router = createBrowserRouter([
     element: <ViewQRCode />
   },
   {
-    path: "/:id",
+    path: "scan",
     element: <Scan />
   }
 ]);

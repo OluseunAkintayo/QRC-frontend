@@ -45,7 +45,6 @@ export default function NewQRCode({ open, close }: INewQRCode) {
     try {
       const response = await axios.request(config);
       const res = response.data as INewQrCodeResponse;
-      console.log(response);
       if (response.status === 200 && !!res.success) {
         toast({
           className: 'top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4',

@@ -35,8 +35,6 @@ const QRCodes = () => {
 
   const qrCodesData: IQRCodeResponse = query.data;
 
-  console.log({ qrCodesData });
-
   return (
     <>
       <Header />
@@ -72,7 +70,10 @@ const QRCodes = () => {
           </>
         </div>
       </section>
-      {newCodeModal && <NewQRCode open={newCodeModal} close={() => setNewcodeModal(false)} />}
+      {newCodeModal && <NewQRCode open={newCodeModal} close={() => {
+        setNewcodeModal(false);
+        query.refetch();
+      }} />}
     </>
   )
 }
