@@ -1,5 +1,4 @@
 import React from 'react'
-import Header from '../Header';
 import { Button } from '@/components/ui/button';
 import NewQRCode from './NewQRCode';
 import axios, { AxiosRequestConfig } from 'axios';
@@ -7,10 +6,15 @@ import { useQuery } from '@tanstack/react-query';
 import Loading from './Loading';
 import { IQRCodeResponse } from '@/lib/types';
 import QRCode from './QRCode';
+import AdminLayout from '../AdminLayout';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
 
 const QRCodes = () => {
   const [newCodeModal, setNewcodeModal] = React.useState<boolean>(false);
   const token = sessionStorage.getItem('token');
+  const [text, setText] = React.useState<string>("");
+
   const getQrCodes = async () => {
     const config: AxiosRequestConfig = {
       url: "qrcode/list",
@@ -36,18 +40,20 @@ const QRCodes = () => {
   const qrCodesData: IQRCodeResponse = query.data;
 
   return (
-    <>
-      <Header />
+    <AdminLayout>
       <section>
-        <div className='p-4'>
-          <div className='flex items-center justify-between'>
-            <h2>QR Codes</h2>
+        <div>
+          <div className='flex gap-8 items-center justify-between'>
+            <div className='relative w-full max-w-[300px]'>
+              <Search className='h-4 absolute top-3 left-1' />
+              <Input placeholder='Search...' className='pl-8' value={text} onChange={(e) => setText(e.target.value)} />
+            </div>
             <div>
               <Button onClick={() => setNewcodeModal(true)}>New QR Code</Button>
             </div>
           </div>
         </div>
-        <div className='p-4 grid gap-4'>
+        <div className=' mt-8 grid gap-4'>
           <>
             {
               (query.isLoading && !query.data && !query.error) &&
@@ -57,7 +63,13 @@ const QRCodes = () => {
           <>
             {
               (!query.isLoading && query.data && !query.error) &&
-              qrCodesData.data.map(item => <QRCode key={item.id} code={item} />)
+              qrCodesData.data
+                .filter(item => {
+                  if(text.trim().length === 0) return item;
+                  if(item.title.toLowerCase().includes(text.toLowerCase())) return item;
+                  if(item.siteUrl.toLowerCase().includes(text.toLowerCase())) return item;
+                })
+                .map(item => <QRCode key={item.id} code={item} />)
             }
           </>
           <>
@@ -74,7 +86,7 @@ const QRCodes = () => {
         setNewcodeModal(false);
         query.refetch();
       }} />}
-    </>
+    </AdminLayout>
   )
 }
 

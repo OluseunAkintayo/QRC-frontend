@@ -1,11 +1,10 @@
-import Header from "./Header";
+import AdminLayout from "./AdminLayout";
 
 const Admin = () => {
   return (
-    <section>
-      <Header />
-      
-    </section>
+    <AdminLayout>
+      tjkddj
+    </AdminLayout>
   )
 }
 

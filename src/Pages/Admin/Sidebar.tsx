@@ -1,8 +1,8 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { QrCode, BarChart, Settings, Users, PlusCircle, List, LogOut } from 'lucide-react'
+import { QrCode, BarChart, Settings, PlusCircle, LogOut } from 'lucide-react'
 
 const sidebarNavItems = [
   {
@@ -12,24 +12,24 @@ const sidebarNavItems = [
   },
   {
     title: "QR Codes",
-    href: "/qr-codes",
+    href: "/dashboard/qrcodes",
     icon: QrCode,
   },
   {
     title: "Create QR Code",
-    href: "/create-qr-code",
+    href: "#",
     icon: PlusCircle,
   },
-  {
-    title: "Campaigns",
-    href: "/campaigns",
-    icon: List,
-  },
-  {
-    title: "Users",
-    href: "/users",
-    icon: Users,
-  },
+  // {
+  //   title: "Campaigns",
+  //   href: "/campaigns",
+  //   icon: List,
+  // },
+  // {
+  //   title: "Users",
+  //   href: "/users",
+  //   icon: Users,
+  // },
   {
     title: "Settings",
     href: "/settings",
@@ -40,13 +40,18 @@ const sidebarNavItems = [
 export function Sidebar() {
   const location = useLocation();
   const { pathname } = location;
+  const navigate = useNavigate();
+  const logout = () => {
+    sessionStorage.clear();
+    setTimeout(() => navigate("/auth/login"), 1000);
+  }
 
   return (
     <div className="flex h-screen w-64 flex-col border-r bg-gray-100/40 dark:bg-gray-800/40">
-      <div className="flex h-14 items-center border-b px-4">
+      <div className="flex h-[72px] items-center border-b px-4">
         <Link className="flex items-center gap-2 font-semibold" to="/">
           <QrCode className="h-6 w-6" />
-          <span>QR Admin</span>
+          <span>QRScan Admin</span>
         </Link>
       </div>
       <ScrollArea className="flex-1">
@@ -67,7 +72,7 @@ export function Sidebar() {
         </nav>
       </ScrollArea>
       <div className="border-t p-4">
-        <Button variant="outline" className="w-full justify-start gap-2">
+        <Button variant="outline" className="w-full justify-start gap-2" onClick={logout}>
           <LogOut className="h-4 w-4" />
           Logout
         </Button>
