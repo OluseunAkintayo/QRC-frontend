@@ -14,7 +14,6 @@ const QRCodes = () => {
   const [newCodeModal, setNewcodeModal] = React.useState<boolean>(false);
   const token = sessionStorage.getItem('token');
   const [text, setText] = React.useState<string>("");
-
   const getQrCodes = async () => {
     const config: AxiosRequestConfig = {
       url: "qrcode/list",
@@ -31,14 +30,11 @@ const QRCodes = () => {
       return error;
     }
   }
-
   const query = useQuery({
     queryKey: ['qrcodes'],
     queryFn: getQrCodes
   });
-
   const qrCodesData: IQRCodeResponse = query.data;
-
   return (
     <AdminLayout>
       <section>
@@ -46,7 +42,7 @@ const QRCodes = () => {
           <div className='flex gap-8 items-center justify-between'>
             <div className='relative w-full max-w-[300px]'>
               <Search className='h-4 absolute top-3 left-1' />
-              <Input placeholder='Search...' className='pl-8' value={text} onChange={(e) => setText(e.target.value)} />
+              <Input placeholder='Search...' className='pl-8 border-slate-900 focus-visible:border-transparent' value={text} onChange={(e) => setText(e.target.value)} />
             </div>
             <div>
               <Button onClick={() => setNewcodeModal(true)}>New QR Code</Button>
@@ -69,7 +65,7 @@ const QRCodes = () => {
                   if(item.title.toLowerCase().includes(text.toLowerCase())) return item;
                   if(item.siteUrl.toLowerCase().includes(text.toLowerCase())) return item;
                 })
-                .map(item => <QRCode key={item.id} code={item} />)
+                .map(item => <QRCode key={item.id} code={item} query={query} />)
             }
           </>
           <>
