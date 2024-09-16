@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button } from '@/components/ui/button';
 import NewQRCode from './NewQRCode';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import Loading from './Loading';
 import { IQRCodeResponse } from '@/lib/types';
@@ -9,6 +9,7 @@ import QRCode from './QRCode';
 import AdminLayout from '../AdminLayout';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
+import { Navigate } from 'react-router-dom';
 
 const QRCodes = () => {
   const [newCodeModal, setNewcodeModal] = React.useState<boolean>(false);
@@ -22,19 +23,22 @@ const QRCodes = () => {
         "Authorization": `Bearer ${token}`
       }
     }
-    try {
-      const res = await axios.request(config);
-      return res.data;
-    } catch (error) {
-      console.log(error);
-      return error;
-    }
+    const res = await axios.request(config);
+    return res;
+    // try {
+    // } catch (error) {
+    //   console.log(error);
+    //   return error;
+    // }
   }
   const query = useQuery({
     queryKey: ['qrcodes'],
     queryFn: getQrCodes
   });
-  const qrCodesData: IQRCodeResponse = query.data;
+
+  const qrCodesData: IQRCodeResponse = query.data?.data;
+  const queryError = query.error as AxiosError;
+
   return (
     <AdminLayout>
       <section>
@@ -61,19 +65,21 @@ const QRCodes = () => {
               (!query.isLoading && query.data && !query.error) &&
               qrCodesData.data
                 .filter(item => {
-                  if(text.trim().length === 0) return item;
-                  if(item.title.toLowerCase().includes(text.toLowerCase())) return item;
-                  if(item.siteUrl.toLowerCase().includes(text.toLowerCase())) return item;
+                  if (text.trim().length === 0) return item;
+                  if (item.title.toLowerCase().includes(text.toLowerCase())) return item;
+                  if (item.siteUrl.toLowerCase().includes(text.toLowerCase())) return item;
                 })
                 .map(item => <QRCode key={item.id} code={item} query={query} />)
             }
           </>
           <>
             {
-              (!query.isLoading && !query.data && query.error) &&
-              <div className='p-8'>
-                <h2 className='text-md'>Error: Unable to load QR Codes at this time</h2>
-              </div>
+              (!query.isLoading && !query.data && queryError) && (
+                queryError.status === 401 ? <Navigate to="/auth/login" /> :
+                  <div className='p-8'>
+                    <h2 className='text-md text-destructive'>Error {queryError.status}: Unable to load QR Codes at this time</h2>
+                  </div>
+              )
             }
           </>
         </div>

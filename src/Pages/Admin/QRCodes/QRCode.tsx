@@ -5,11 +5,12 @@ import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 import React from 'react';
 import DeleteQrCode from './DeleteQrCode';
-import { UseQueryResult } from '@tanstack/react-query';
+import { QueryObserverSuccessResult } from '@tanstack/react-query';
+import { AxiosResponse } from 'axios';
 
 interface IQRCodeComponent {
   code: IQRCode;
-  query: UseQueryResult<IQRCode, Error>
+  query: QueryObserverSuccessResult<AxiosResponse<IQRCode, Error>>;
 }
 
 const QRCode = ({ code, query }: IQRCodeComponent) => {
