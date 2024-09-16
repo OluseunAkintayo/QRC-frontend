@@ -16,6 +16,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
+
 const router = createBrowserRouter([
   {
     path: "/",

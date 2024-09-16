@@ -35,6 +35,9 @@ const Login = () => {
     const config: AxiosRequestConfig = {
       method: "POST",
       url: "auth/user/login",
+      headers: {
+        "Access-Control-Allow-Origin": "*"
+      },
       data: {
         email: login.username,
         password: login.password
