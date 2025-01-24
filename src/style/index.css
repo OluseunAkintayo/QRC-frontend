@@ -17,3 +17,9 @@ td {
     "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
     sans-serif;
 }
+
+
+main {
+  height: calc(100dvh - 110px);
+  overflow-y: auto;
+}
