@@ -4,16 +4,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { ILoginResponse } from '@/lib/types';
-import axios, { AxiosRequestConfig } from 'axios';
-import { Loader } from 'lucide-react';
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
+import { Eye, EyeOff, Loader } from 'lucide-react';
 import React from 'react'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import google from '@/assets/google.svg';
 
 const Login = () => {
-  const navigate = useNavigate();
   const [login, setLogin] = React.useState<{ username: string; password: string; }>({ username: "", password: "" });
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [visibility, setVisibility] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<AxiosError | Error | string | null>(null);
   const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const name = evt.target.name;
     const value = evt.target.value;
@@ -31,6 +32,7 @@ const Login = () => {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (error) setError(null);
     setLoading(true);
     const config: AxiosRequestConfig = {
       method: "POST",
@@ -45,77 +47,87 @@ const Login = () => {
     }
     try {
       const res = await axios.request(config);
-      if (res.status !== 200) {
-        console.log("response not 200");
-        console.log(res);
+      console.log(res);
+      if (res.status === 400) {
+        setError("Incorrect username or password");
         return;
       }
       const data: ILoginResponse = res.data;
       if (!data.success) {
+        setError("Error logging in");
+        console.log(res);
         return;
       }
       sessionStorage.setItem("user", data.data.email);
       sessionStorage.setItem("token", data.data.token);
       sessionStorage.setItem("exp", data.data.exp);
-      sessionStorage.setItem("role", data.data.role.toString());
-      setLoading(false);
-      navigate("/dashboard");
-    } catch (error) {
-      console.log({ error });
+      window.location.replace("/dashboard");
+    } catch (err: unknown) {
+      const catchError = err as AxiosError;
+      console.log({ error: catchError });
+      setError("An error occurred on the server. Please try again after sometime");
       setLoading(false);
     }
   }
 
   return (
     <div className='h-[100dvh] grid place-items-center'>
-      <Card className='w-full min-w-[400px] max-w-[400px] shadow-lg'>
-        <CardHeader>
-          <CardTitle>Login</CardTitle>
-          <CardDescription>Please enter username and password to continue</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={submit} className='grid gap-4'>
-            <div className='grid gap-2'>
-              <Label htmlFor="email">Username</Label>
-              <Input placeholder='Enter username' name="username" required value={login.username} onChange={handleChange} />
+      <div className="p-4">
+        <Card className='w-full sm:min-w-[400px] min-w-0 max-w-[400px] shadow-lg'>
+          <CardHeader>
+            <CardTitle>Login</CardTitle>
+            <CardDescription>Please enter username and password to continue</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={submit} className='grid gap-4'>
+              <div className='grid gap-2'>
+                <Label htmlFor="email">Username</Label>
+                <Input placeholder='Enter username' name="username" required value={login.username} onChange={handleChange} />
+              </div>
+              <div className='grid gap-2'>
+                <Label htmlFor="email">Password</Label>
+                <div className='relative'>
+                  <Input placeholder='Enter password' className='pr-12' type={visibility ? "text" : "password"} name="password" required value={login.password} onChange={handleChange} />
+                  <span className='absolute top-0 bottom-0 right-0 px-2 grid place-items-center cursor-pointer' onClick={() => setVisibility(item => !item)}>
+                    {visibility ? <EyeOff className='h-5 text-gray-500' /> : <Eye className='h-5 text-gray-500' />}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <Button className='w-full' disabled={loading}>
+                  {loading ? <Loader className='animate-spin w-4 h-4' /> : "Login"}
+                </Button>
+              </div>
+            </form>
+            <div className="relative mt-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="bg-white px-2 text-gray-500">Or continue with</span>
+              </div>
             </div>
-            <div className='grid gap-2'>
-              <Label htmlFor="email">Password</Label>
-              <Input placeholder='Enter password' type="password" name="password" required value={login.password} onChange={handleChange} />
-            </div>
-            <div>
-              <Button className='w-full' disabled={loading}>
-                {loading ? <Loader className='animate-spin w-4 h-4' /> : "Login"}
+            <div className="mt-6">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={showMessage}
+              >
+                <img src={google} className='w-5 mr-1' />
+                Sign in with Google
               </Button>
             </div>
-          </form>
-          <div className="relative mt-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-2 text-gray-500">Or continue with</span>
-            </div>
-          </div>
-          <div className="mt-6">
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={showMessage}
-            >
-              <img src={google} className='w-5 mr-1' />
-              Sign in with Google
-            </Button>
-          </div>
-          <p className="mt-4 text-center text-sm text-gray-600">
-            Don't have an account?{" "}
-            <Link to="/auth/signup" className="font-medium text-blue-600 hover:text-blue-500 cursor-pointer">
-              Sign up
-            </Link>
-          </p>
-        </CardContent>
-        <CardFooter></CardFooter>
-      </Card>
+            <p className="mt-4 text-center text-sm text-gray-600">
+              Don't have an account?{" "}
+              <Link to="/auth/signup" className="font-medium text-blue-600 hover:text-blue-500 cursor-pointer">
+                Sign up
+              </Link>
+            </p>
+          </CardContent>
+          <CardFooter></CardFooter>
+        </Card>
+      </div>
     </div>
   )
 }

@@ -14,8 +14,8 @@ import ViewQRCode from './Pages/Admin/QRCodes/View';
 import axios from 'axios';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
-
+// axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
+axios.defaults.baseURL = "http://localhost:5237/api";
 
 const router = createBrowserRouter([
   {

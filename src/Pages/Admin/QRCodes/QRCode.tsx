@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { IQRCode } from '@/lib/types';
-import { Calendar, Download, Eye, Link as LinkIcon, PieChart, QrCode as QRCodeIcon, Trash2 } from 'lucide-react';
+import { Calendar, Download, Link as LinkIcon, PieChart, QrCode as QRCodeIcon, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 import React from 'react';
@@ -13,19 +13,44 @@ interface IQRCodeComponent {
   query: QueryObserverSuccessResult<AxiosResponse<IQRCode, Error>>;
 }
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const QRCode = ({ code, query }: IQRCodeComponent) => {
   const [deleteModal, setDeleteModal] = React.useState<boolean>(false);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
+  const download = async () => {
+    setIsLoading(true);
+    const res = await fetch(BACKEND_URL + "/" + code.imageUrl.split("/")[1]);
+    if (res.ok) {
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.download = "QR-Code.png";
+      link.href = url;
+      document.body.appendChild(link);
+      link.click();
+      URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+      setIsLoading(false);
+    } else {
+      alert("Error downloading file. Please try again later.")
+      console.log(res);
+      setIsLoading(false);
+    }
+  }
+
   return (
     <React.Fragment>
       <div className='bg-gray-50 p-6'>
         <div className='flex justify-between'>
           <div className='flex gap-8'>
-            <a href={code.imageUrl} download="qr-code" target="_blank" className='relative group'>
-              <QRCodeIcon className='w-[100px] h-[100px] shadow-lg border border-gray-100 rounded transition-all duration-500 group-hover:opacity-50' />
-              <span className='absolute bg-gray-300/90 w-full h-full top-0 left-0 rounded grid place-items-center transition-all duration-500 opacity-0 group-hover:opacity-100'>
-                <Download />
-              </span>
-            </a>
+            <button disabled={isLoading} onClick={download} className='group'>
+              <QRCodeIcon className='w-[100px] h-[100px] text-primary shadow-lg border border-gray-100 rounded transition-all duration-500 group-hover:opacity-50' />
+              {/* <span className='absolute bg-slate-300/90 w-full h-full top-0 left-0 rounded grid place-items-center transition-all duration-500 opacity-0 group-hover:opacity-100'>
+                <Download className='text-primary' />
+              </span> */}
+            </button>
             <div className='flex flex-col gap-2'>
               <Link to={code.urlId}><h2 className='text-lg font-bold text-gray-800'>{code.title}</h2></Link>
               <p className='flex items-center gap-1'><LinkIcon className='h-4' /> <a href={code.siteUrl} className='text-gray-600 font-bold hover:text-gray-800' target='_blank'>{code.siteUrl}</a></p>
@@ -41,8 +66,10 @@ const QRCode = ({ code, query }: IQRCodeComponent) => {
             </div>
           </div>
           <div className='flex gap-2'>
-            <Button className='w-12 h-12 rounded-full p-0 shadow-lg' variant="outline" onClick={() => console.log(code)}><Eye className='w-5' /></Button>
-            <Button className='w-12 h-12 rounded-full p-0 shadow-lg' variant="destructive" onClick={() => setDeleteModal(true)}><Trash2 className='w-5' /></Button>
+            <Button size="icon" className='rounded-full p-0 shadow-lg' variant="outline" onClick={download}>
+              <Download className='w-5 text-primary' />
+            </Button>
+            <Button size="icon" className='rounded-full p-0 shadow-lg' variant="destructive" onClick={() => setDeleteModal(true)}><Trash2 className='w-5' /></Button>
           </div>
         </div>
       </div>

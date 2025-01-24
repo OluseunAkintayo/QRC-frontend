@@ -2,7 +2,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { QrCode, BarChart, Settings, PlusCircle, LogOut } from 'lucide-react'
+import { QrCode, BarChart, Settings, PlusCircle, LogOut, Loader } from 'lucide-react'
+import React from 'react'
 
 const sidebarNavItems = [
   {
@@ -41,7 +42,9 @@ export function Sidebar() {
   const location = useLocation();
   const { pathname } = location;
   const navigate = useNavigate();
+  const [pending, setpending] = React.useState(false);
   const logout = () => {
+    setpending(true);
     sessionStorage.clear();
     setTimeout(() => navigate("/auth/login"), 1000);
   }
@@ -60,7 +63,7 @@ export function Sidebar() {
             <Link key={index} to={item.href}>
               <Button
                 variant={pathname === item.href ? "secondary" : "ghost"}
-                className={cn("w-full justify-start gap-2", 
+                className={cn("w-full justify-start gap-2",
                   pathname === item.href ? "bg-gray-200 dark:bg-gray-700" : ""
                 )}
               >
@@ -72,8 +75,8 @@ export function Sidebar() {
         </nav>
       </ScrollArea>
       <div className="border-t p-4">
-        <Button variant="outline" className="w-full justify-start gap-2" onClick={logout}>
-          <LogOut className="h-4 w-4" />
+        <Button variant="outline" className="w-full justify-start gap-2" disabled={pending} onClick={logout}>
+          {pending ? <Loader className='h-4 animate-spin' /> : <LogOut className="h-4 w-4" />}
           Logout
         </Button>
       </div>

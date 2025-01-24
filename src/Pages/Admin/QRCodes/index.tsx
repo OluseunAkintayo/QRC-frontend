@@ -25,11 +25,6 @@ const QRCodes = () => {
     }
     const res = await axios.request(config);
     return res;
-    // try {
-    // } catch (error) {
-    //   console.log(error);
-    //   return error;
-    // }
   }
   const query = useQuery({
     queryKey: ['qrcodes'],

@@ -52,17 +52,18 @@ export default function DeleteQrCode({ open, close, data }: IDeleteQrCode) {
 
   return (
     <AlertDialog open={open} onOpenChange={close}>
-      <AlertDialogContent className="sm:max-w-[500px]">
+      <AlertDialogContent className="sm:max-w-[400px]">
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-destructive" />
             Confirm Deletion
           </AlertDialogTitle>
-          <AlertDialogDescription>
-            Are you sure you want to delete the QR code <span className="font-bold">{data.title}</span>? This action cannot be undone.
+          <AlertDialogDescription className="text-left">
+            Are you sure you want to delete the QR code <span className="font-bold">{data.title}</span>? <br />
+            This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="sm:justify-start">
+        <AlertDialogFooter className="grid grid-cols-2 gap-4 pt-4">
           <Button type="button" variant="destructive" onClick={handleDelete}>
             Delete
           </Button>
