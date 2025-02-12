@@ -1,21 +1,14 @@
 import { Button } from '@/components/ui/button';
-import { IQRCode } from '@/lib/types';
 import { Calendar, Download, Link as LinkIcon, PieChart, QrCode as QRCodeIcon, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 import React from 'react';
 import DeleteQrCode from './DeleteQrCode';
-import { QueryObserverSuccessResult } from '@tanstack/react-query';
-import { AxiosResponse } from 'axios';
-
-interface IQRCodeComponent {
-  code: IQRCode;
-  query: QueryObserverSuccessResult<AxiosResponse<IQRCode, Error>>;
-}
+import { QRCodeComponentProps } from '@/lib/types';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-const QRCode = ({ code, query }: IQRCodeComponent) => {
+const QRCode = ({ code, refetch }: QRCodeComponentProps) => {
   const [deleteModal, setDeleteModal] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -26,7 +19,7 @@ const QRCode = ({ code, query }: IQRCodeComponent) => {
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.download = "QR-Code.png";
+      link.download = code.imageUrl.split("/")[1] + ".png";
       link.href = url;
       document.body.appendChild(link);
       link.click();
@@ -47,9 +40,6 @@ const QRCode = ({ code, query }: IQRCodeComponent) => {
           <div className='flex gap-8'>
             <button disabled={isLoading} onClick={download} className='group'>
               <QRCodeIcon className='w-[100px] h-[100px] text-primary shadow-lg border border-gray-100 rounded transition-all duration-500 group-hover:opacity-50' />
-              {/* <span className='absolute bg-slate-300/90 w-full h-full top-0 left-0 rounded grid place-items-center transition-all duration-500 opacity-0 group-hover:opacity-100'>
-                <Download className='text-primary' />
-              </span> */}
             </button>
             <div className='flex flex-col gap-2'>
               <Link to={code.urlId}><h2 className='text-lg font-bold text-gray-800'>{code.title}</h2></Link>
@@ -78,10 +68,10 @@ const QRCode = ({ code, query }: IQRCodeComponent) => {
           open={deleteModal}
           close={() => {
             setDeleteModal(false);
-            query.refetch();
+            refetch();
           }}
-          data={code}
-        />}
+          data={{ id: code?.id, title: code.title }}
+        />} 
     </React.Fragment>
   )
 }

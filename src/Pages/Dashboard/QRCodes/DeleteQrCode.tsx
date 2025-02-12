@@ -8,17 +8,11 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { AlertTriangle } from 'lucide-react'
-import { IQRCode } from "@/lib/types";
 import axios, { AxiosRequestConfig } from "axios";
 import { useToast } from "@/hooks/use-toast";
+import { DeleteQrCodeProps } from "@/lib/types";
 
-interface IDeleteQrCode {
-  open: boolean;
-  close: () => void;
-  data: IQRCode;
-}
-
-export default function DeleteQrCode({ open, close, data }: IDeleteQrCode) {
+export default function DeleteQrCode({ open, close, data }: DeleteQrCodeProps) {
   const token = sessionStorage.getItem("token") as string;
   const { toast } = useToast();
 

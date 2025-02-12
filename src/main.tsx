@@ -5,17 +5,17 @@ import './style/index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from './Pages/Home';
 import Login from './Pages/Auth/Login';
-import Admin from './Pages/Admin';
 import Scan from './Pages/Scan';
-import QRCodes from './Pages/Admin/QRCodes';
-import Signup from './Pages/Auth/Signup';
+import QRCodes from './Pages/Dashboard/QRCodes';
 import { Toaster } from "@/components/ui/toaster"
-import ViewQRCode from './Pages/Admin/QRCodes/View';
 import axios from 'axios';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import ViewQRCode from './Pages/Dashboard/ViewQRCode';
+import ProtectedRoute from './components/ProtectedRoute';
+import Dashboard from './Pages/Dashboard';
 
-// axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
-axios.defaults.baseURL = "http://localhost:5237/api";
+axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
+// axios.defaults.baseURL = "http://localhost:5237/api";
 
 const router = createBrowserRouter([
   {
@@ -27,24 +27,26 @@ const router = createBrowserRouter([
     element: <Login />
   },
   {
-    path: "/auth/signup",
-    element: <Signup />
+    path: "scan",
+    element: <Scan />
   },
   {
     path: "/dashboard",
-    element: <Admin />
-  },
-  {
-    path: "/dashboard/qrcodes",
-    element: <QRCodes />
-  },
-  {
-    path: "/dashboard/qrcodes/:codeId",
-    element: <ViewQRCode />
-  },
-  {
-    path: "scan",
-    element: <Scan />
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: "",
+        element: <Dashboard />
+      },
+      {
+        path: "/dashboard/qrcodes",
+        element: <QRCodes />
+      },
+      {
+        path: "/dashboard/qrcodes/:codeId",
+        element: <ViewQRCode />
+      }
+    ]
   }
 ]);
 

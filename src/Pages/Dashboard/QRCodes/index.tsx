@@ -1,19 +1,19 @@
 import React from 'react'
 import { Button } from '@/components/ui/button';
-import NewQRCode from './NewQRCode';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import Loading from './Loading';
-import { IQRCodeResponse } from '@/lib/types';
+import { QRCodeResponseProps } from '@/lib/types';
 import QRCode from './QRCode';
-import AdminLayout from '../AdminLayout';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
+import Layout from '@/components/Layout';
+import NewQRCode from './NewQRCode';
 
+const token = sessionStorage.getItem('token');
 const QRCodes = () => {
   const [newCodeModal, setNewcodeModal] = React.useState<boolean>(false);
-  const token = sessionStorage.getItem('token');
   const [text, setText] = React.useState<string>("");
   const getQrCodes = async () => {
     const config: AxiosRequestConfig = {
@@ -31,11 +31,11 @@ const QRCodes = () => {
     queryFn: getQrCodes
   });
 
-  const qrCodesData: IQRCodeResponse = query.data?.data;
+  const qrCodesData: QRCodeResponseProps = query.data?.data;
   const queryError = query.error as AxiosError;
 
   return (
-    <AdminLayout>
+    <Layout>
       <section>
         <div>
           <div className='flex gap-8 items-center justify-between'>
@@ -64,7 +64,7 @@ const QRCodes = () => {
                   if (item.title.toLowerCase().includes(text.toLowerCase())) return item;
                   if (item.siteUrl.toLowerCase().includes(text.toLowerCase())) return item;
                 })
-                .map(item => <QRCode key={item.id} code={item} query={query} />)
+                .map(item => <QRCode key={item.id} code={item} refetch={query.refetch} />)
             }
           </>
           <>
@@ -83,7 +83,7 @@ const QRCodes = () => {
         setNewcodeModal(false);
         query.refetch();
       }} />}
-    </AdminLayout>
+    </Layout>
   )
 }
 

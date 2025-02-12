@@ -3,12 +3,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { ILoginResponse } from '@/lib/types';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { Eye, EyeOff, Loader } from 'lucide-react';
 import React from 'react'
 import { Link } from 'react-router-dom';
 import google from '@/assets/google.svg';
+import { LoginResponseProps } from '@/lib/types';
 
 const Login = () => {
   const [login, setLogin] = React.useState<{ username: string; password: string; }>({ username: "", password: "" });
@@ -52,16 +52,15 @@ const Login = () => {
         setError("Incorrect username or password");
         return;
       }
-      const data: ILoginResponse = res.data;
+      const data: LoginResponseProps = res.data;
       if (!data.success) {
         setError("Error logging in");
-        console.log(res);
         return;
       }
       sessionStorage.setItem("user", data.data.email);
       sessionStorage.setItem("token", data.data.token);
       sessionStorage.setItem("exp", data.data.exp);
-      window.location.replace("/dashboard");
+      setTimeout(() => window.location.replace("/dashboard"), 500);
     } catch (err: unknown) {
       const catchError = err as AxiosError;
       console.log({ error: catchError });

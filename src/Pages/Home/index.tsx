@@ -5,8 +5,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import axios, { AxiosRequestConfig } from "axios";
@@ -18,7 +16,7 @@ import UserComponent from "./UserComponent";
 
 const nexus = sessionStorage.getItem('nexus') as string | null;
 
-const BackToLogin = () => <Navigate to="/login" />;
+const BackToLogin = () => <Navigate to="/auth/login" />;
 
 const Home = () => {
   return nexus ? <LoadData /> : <BackToLogin />;
@@ -61,7 +59,7 @@ const LoadData = () => {
 
   return (
     <div>
-      <Header />
+      {/* <Header /> */}
       <main className="max-w-screen-xl mx-auto">
         <ScrollArea className="h-full">
           <div className="p-4 space-y-4 h-full">
@@ -114,7 +112,7 @@ const LoadData = () => {
           </div>
         </ScrollArea>
       </main>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   )
 }
